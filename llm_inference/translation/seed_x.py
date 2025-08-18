@@ -6,5 +6,7 @@ seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_cod
 
 
 def translate(sentence: str, target_lang: str = 'en', **kwargs) -> list[tuple[str, float]]:
-    prompt = f'Translate the following sentence into "{target_lang}" and explain it in detail: {sentence} <{target_lang.lower().replace("<", "").replace(">", "")}>'
-    return inference_with_beam_search(prompt=prompt, llm=seed_x_lm, **kwargs)
+    prompt = f'Translate the sentence into <{target_lang.lower().replace("<", "").replace(">", "")}> AFTER explanation in detail: <sentence>{sentence}</sentence> [COT]'
+    best_ans = sorted(inference_with_beam_search(prompt=prompt, llm=seed_x_lm, **kwargs), key=lambda x: len(x[0]), reverse=True)
+    prompt = f'{best_ans}<{target_lang.lower().replace("<", "").replace(">", "")}>'
+    return sorted(inference_with_beam_search(prompt=prompt, llm=seed_x_lm, **kwargs), key=lambda x: len(x[0]), reverse=True)
