@@ -1,8 +1,9 @@
-from vllm import LLM
+from vllm import LLM, TextPrompt
 from vllm.sampling_params import BeamSearchParams
 
 
-def inference_with_beam_search(prompt: str, llm: LLM, temperature: float = .0, beam_width: int = 8, max_tokens: int = 512):
-    beam_search_params = BeamSearchParams(temperature=temperature, beam_width=beam_width, max_tokens=max_tokens)
-    results = llm.generate(prompt, beam_search_params)[0]
-    return [res.text.strip() for res in results.outputs]
+def inference_with_beam_search(prompt: str, llm: LLM, temperature: float = .4, beam_width: int = 5, max_tokens: int = 512) -> list[tuple[str, float]]:
+    beam_search_params = BeamSearchParams(temperature=temperature, beam_width=beam_width, max_tokens=max_tokens, include_stop_str_in_output=False)
+    results = llm.beam_search(prompts=[TextPrompt(prompt=prompt)], params=beam_search_params)[0].sequences
+    results.sort(key=lambda x: x.cum_logprob, reverse=True)
+    return [(res.text, res.cum_logprob) for res in results]
