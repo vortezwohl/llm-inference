@@ -14,12 +14,13 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     post_think = '</think>'
     pre_stop_seq = '<sentence>'
     stop_seq = '</sentence>'
+    think_regex = rf'.+{post_think}'
     regex = rf'.+{stop_seq}'
     kwargs['stop'] = post_think
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
               f'<{target_lang.lower().replace("<", "").replace(">", "")}>{pre_think}')
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
-    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
+    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=think_regex, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)
     logger.debug(f'ANS: {best_ans}')
     best_ans = best_ans[0]
