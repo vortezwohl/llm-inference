@@ -24,11 +24,11 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     logger.debug(f'ANS: {best_ans}')
     kwargs['stop'] = None
     prompt = (f'[CONTEXT]Expert:"{best_ans}"[CONTEXT]'
-              + f'Translate sentence "{sentence}" into "{target_lang.lower()}" based on the context without explain:'
-              + (inference([f'Translate sentence "According to the context, the best {target_lang} translation is '
-                            f'(only outputs the translated {target_lang} sentence):" into "{target_lang}": {lang_seq}'],
+              + (inference([f'Translate sentence "According to the context, the best {target_lang} translation '
+                            f'for "{sentence}" is (only outputs the translated {target_lang} sentence):" '
+                            f'into "{target_lang}": {lang_seq}'],
                            llm=seed_x_lm, **kwargs)[0] if 'en' not in target_lang
-                 else 'According to the context, the best english translation is '
+                 else f'According to the context, the best english translation for "{sentence}" is '
                       f'(only outputs the translated {target_lang} sentence):')
               + f'{lang_seq}"')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
