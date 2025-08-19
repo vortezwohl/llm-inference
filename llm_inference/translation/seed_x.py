@@ -9,7 +9,7 @@ seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_cod
                 swap_space=2, cpu_offload_gb=1, max_seq_len_to_capture=6144)
 
 
-def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
+def translate_cot(sentence: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
     pre_think = '[COT]'
     post_think = '[COT]'
     stop_seq = '[END]'
@@ -38,3 +38,15 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
                       key=lambda x: len(x[0]), reverse=True)[0][1:-1].strip()
     logger.debug(f'TRANSLATION: {best_ans}')
     return best_ans
+
+
+def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
+    lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
+    stop_seq = '[END]'
+    regex = rf'.+"{stop_seq}'
+    prompt = f'Translate sentence "{sentence}" into "{target_lang.lower()}": {lang_seq}'
+    kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 2.75)
+    kwargs['stop'] = stop_seq
+    translation = inference(prompt=[prompt], llm=seed_x_lm, regex=regex, **kwargs)[0].strip()
+    logger.debug(f'TRANSLATION: {translation}')
+    return translation
