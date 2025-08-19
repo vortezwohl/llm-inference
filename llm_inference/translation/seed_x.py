@@ -32,7 +32,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
                       f'(only outputs the translated {target_lang} sentence):')
               + f'{lang_seq}"')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
-    kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 1.75)
+    kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 3.75)
     kwargs['stop'] = stop_seq
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)[0][1:-1].strip()
