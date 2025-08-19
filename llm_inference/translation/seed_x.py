@@ -25,9 +25,12 @@ def translate_cot(sentence: str, target_lang: str = 'en', resample: int = 1, **k
 
 def translate(sentence: str, target_lang: str = 'en', **kwargs) -> str:
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
+    stop_seq = f'</{target_lang.lower().replace("<", "").replace(">", "")}>'
+    regex = rf'.+"{stop_seq}'
     prompt = (inference([f'Translate sentence "Translate this sentence into [{target_lang}] without any explain." into "{target_lang}":{lang_seq}'],
                         llm=seed_x_lm, **kwargs)[0] + f'<sentence>{sentence}</sentence>{lang_seq}'
               + lang_seq)
-    translation = inference(prompt=[prompt], llm=seed_x_lm, **kwargs)[0].strip()
+    kwargs['stop'] = stop_seq
+    translation = inference(prompt=[prompt], llm=seed_x_lm, regex=regex, **kwargs)[0].strip()
     logger.debug(f'TRANSLATION: {translation}')
     return translation
