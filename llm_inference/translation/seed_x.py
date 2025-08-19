@@ -29,7 +29,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
                            llm=seed_x_lm, **kwargs)[0] if 'en' not in target_lang
                  else 'After all thinking above, the best english translation is:') + '"')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
-    kwargs['max_tokens'] = int(len(sentence) * 2.5)
+    kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 1.75)
     kwargs['stop'] = stop_seq
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)[0][1:-1].strip()
