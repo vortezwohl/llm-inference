@@ -22,7 +22,8 @@ def inference(prompt: str | list[str], llm: LLM, regex: str | None = None, **kwa
     results = []
     while retry < max_retry:
         results = llm.generate(prompt, sampling_params=SamplingParams(**kwargs),
-                               guided_options_request=GuidedDecodingRequest(guided_regex=regex) if regex else None)
+                               guided_options_request=GuidedDecodingRequest(guided_regex=regex) if regex else None,
+                               use_tqdm=True)
         logger.debug(f'inference: {results}')
         results = [y.text for y in [x.outputs[0] for x in results] if y.finish_reason.lower() == 'stop']
         if len(results) > 0:
