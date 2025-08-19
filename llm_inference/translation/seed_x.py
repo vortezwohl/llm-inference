@@ -22,7 +22,6 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)[0]
-    best_ans = best_ans[:best_ans.rfind(post_think)]
     logger.debug(f'ANS: {best_ans}')
     kwargs['stop'] = None
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
