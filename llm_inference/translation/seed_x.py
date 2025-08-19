@@ -14,17 +14,19 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     post_think = '</think>'
     pre_stop_seq = '<sentence>'
     stop_seq = '</sentence>'
-    regex = rf'{pre_stop_seq}.+{stop_seq}'
-    prompt = (f'Translate sentence "{pre_stop_seq}{sentence}{stop_seq}" into "{target_lang.lower()}" and explain in detail:'
+    regex = rf'.+{stop_seq}'
+    kwargs['stop'] = post_think
+    prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
               f'<{target_lang.lower().replace("<", "").replace(">", "")}>{pre_think}')
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)
     logger.debug(f'ANS: {best_ans}')
     best_ans = best_ans[0]
-    prompt = (f'Translate sentence "{pre_stop_seq}{sentence}{stop_seq}" into "{target_lang.lower()}" and explain in detail:'
+    prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
+              f'{pre_think}{best_ans}{post_think}After thinking, the best translation is '
               f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
-              f'{pre_think}{best_ans}{post_think}After thinking, the best translation is {pre_stop_seq}')
+              f'{pre_stop_seq}')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
     kwargs['max_tokens'] = int(len(sentence) * 2.5)
     kwargs['stop'] = stop_seq
