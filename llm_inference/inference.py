@@ -1,6 +1,7 @@
 import logging
 
 from vllm import LLM, TextPrompt
+from vllm.model_executor.guided_decoding.guided_fields import GuidedDecodingRequest
 from vllm.sampling_params import BeamSearchParams, SamplingParams
 
 logger = logging.getLogger('llm_inference')
@@ -14,13 +15,14 @@ def inference_with_beam_search(prompt: str, llm: LLM, temperature: float = .0, b
     return [(res.text, res.cum_logprob) for res in results]
 
 
-def inference(prompt: str | list[str], llm: LLM, **kwargs) -> list[str]:
+def inference(prompt: str | list[str], llm: LLM, regex: str, **kwargs) -> list[str]:
     prompt = [TextPrompt(prompt=prompt)] if isinstance(prompt, str) else [TextPrompt(prompt=p) for p in prompt]
     max_retry = 8
     retry = 0
     results = []
     while retry < max_retry:
-        results = llm.generate(prompt, sampling_params=SamplingParams(**kwargs))
+        results = llm.generate(prompt, sampling_params=SamplingParams(**kwargs),
+                               guided_options_request=GuidedDecodingRequest(guided_regex=regex))
         logger.debug(f'inference: {results}')
         results = [y.text for y in [x.outputs[0] for x in results] if y.finish_reason.lower() == 'stop']
         if len(results) > 0:
