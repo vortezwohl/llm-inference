@@ -12,8 +12,7 @@ seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_cod
 def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
     pre_think = '[COT]'
     post_think = '[COT]'
-    pre_stop_seq = '<sentence>'
-    stop_seq = '</sentence>'
+    stop_seq = '[END]'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     regex = rf'.+{stop_seq}'
     kwargs['stop'] = post_think
@@ -29,7 +28,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
               + inference([f'Translate sentence "After thinking, the best translation is" into "{target_lang}": {lang_seq}'],
                           llm=seed_x_lm, **kwargs)[0]
               if 'en' not in target_lang else 'After thinking, the best translation is ' +
-              f'{lang_seq}{pre_stop_seq}')
+              f'{lang_seq}')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
     kwargs['max_tokens'] = int(len(sentence) * 2.5)
     kwargs['stop'] = stop_seq
