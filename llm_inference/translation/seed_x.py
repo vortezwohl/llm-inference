@@ -27,7 +27,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}":'
               f'{pre_think}{best_ans}{post_think}'
               + (inference([f'Translate sentence "After all thinking above, the best translation is:" into "{target_lang}": {lang_seq}'],
-                          llm=seed_x_lm, **kwargs)[0] if 'en' not in target_lang
+                           llm=seed_x_lm, **kwargs)[0] if 'en' not in target_lang
                  else 'After all thinking above, the best translation is:') +
               f'{lang_seq}{pre_translation}')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
