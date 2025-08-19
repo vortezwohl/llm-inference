@@ -20,7 +20,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
                       key=lambda x: len(x[0]), reverse=True)
     logger.debug(f'ANS: {best_ans}')
     best_ans = best_ans[0]
-    prompt = (f'[COT]{best_ans}[COT]Translate the sentence into "{target_lang.lower()}":'
+    prompt = (f'[COT]{best_ans}[COT]Translate the sentence into "{target_lang.lower()}" (Give me translation only):'
               f'<sentence>{sentence}{stop_seq}'
               f'<{target_lang.lower().replace("<", "").replace(">", "")}><sentence>')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
