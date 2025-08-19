@@ -14,8 +14,7 @@ def translate_cot(sentence: str, target_lang: str = 'en', resample: int = 1, **k
     post_think = '[COT]'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     kwargs['stop'] = post_think
-    prompt = (inference([f'Translate sentence "Translate this sentence and explain in detail." into "{target_lang}": {lang_seq}'],
-                        llm=seed_x_lm, **kwargs)[0] + f'<sentence>{sentence}</sentence>{lang_seq}{pre_think}')
+    prompt = f'Translate the sentence and explain in detail.<sentence>{sentence}</sentence>{lang_seq}{pre_think}'
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
     cot = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
                  key=lambda x: len(x[0]), reverse=True)[0]
@@ -27,8 +26,7 @@ def translate(sentence: str, target_lang: str = 'en', **kwargs) -> str:
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     stop_seq = f'</{target_lang.lower().replace("<", "").replace(">", "")}>'
     regex = rf'.+"{stop_seq}'
-    prompt = inference([f'Translate sentence "Translate this sentence without explain." into "{target_lang}" without explain: {lang_seq}'],
-                       llm=seed_x_lm, **kwargs)[0] + f'<sentence>{sentence}</sentence>{lang_seq}'
+    prompt = f'Translate the sentence without any explain.<sentence>{sentence}</sentence>{lang_seq}'
     kwargs['stop'] = stop_seq
     translation = inference(prompt=[prompt], llm=seed_x_lm, regex=regex, **kwargs)[0].strip()
     logger.debug(f'TRANSLATION: {translation}')
