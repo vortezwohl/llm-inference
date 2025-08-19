@@ -26,7 +26,8 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     kwargs['stop'] = None
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
               f'{pre_think}{best_ans.replace(pre_think, "").replace(post_think, "")}{post_think}'
-              + inference(['After thinking, the best translation is '], llm=seed_x_lm, **kwargs)[0] +
+              + inference(['After thinking, the best translation is '], llm=seed_x_lm, **kwargs)[0]
+              if 'en' not in target_lang else 'After thinking, the best translation is ' +
               f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
               f'{pre_stop_seq}')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
