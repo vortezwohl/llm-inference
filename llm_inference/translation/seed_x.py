@@ -14,10 +14,11 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     post_think = '[COT]'
     pre_stop_seq = '<sentence>'
     stop_seq = '</sentence>'
+    lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     regex = rf'.+{stop_seq}'
     kwargs['stop'] = post_think
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
-              f'<{target_lang.lower().replace("<", "").replace(">", "")}>{pre_think}')
+              f'{lang_seq}{pre_think}')
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)[0]
@@ -26,10 +27,10 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     kwargs['stop'] = None
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
               f'{pre_think}{best_ans}{post_think}'
-              + inference(['After thinking, the best translation is '], llm=seed_x_lm, **kwargs)[0]
+              + inference([f'Translate sentence "After thinking, the best translation is" into "{target_lang}": {lang_seq}'],
+                          llm=seed_x_lm, **kwargs)[0]
               if 'en' not in target_lang else 'After thinking, the best translation is ' +
-              f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
-              f'{pre_stop_seq}')
+              f'{lang_seq}{pre_stop_seq}')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
     kwargs['max_tokens'] = int(len(sentence) * 2.5)
     kwargs['stop'] = stop_seq
