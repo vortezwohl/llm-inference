@@ -12,35 +12,19 @@ seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_cod
 def translate_cot(sentence: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
     pre_think = '[COT]'
     post_think = '[COT]'
-    stop_seq = '[END]'
-    regex = rf'.+"{stop_seq}'
+    regex = rf'.+"{post_think}'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     kwargs['stop'] = post_think
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
               f'{lang_seq}{pre_think}')
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
-    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
+    cot = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)[0]
-    logger.debug(f'ANS: {best_ans}')
-    kwargs['stop'] = None
-    prompt = (f'[CONTEXT]Expert:"{best_ans}"[CONTEXT]'
-              + (inference([f'Translate sentence "According to the context, the best {target_lang} translation '
-                            f'for "{sentence}" is (only outputs the translated {target_lang} sentence):" '
-                            f'into "{target_lang}": {lang_seq}'],
-                           llm=seed_x_lm, **kwargs)[0] if 'en' not in target_lang
-                 else f'According to the context, the best english translation for "{sentence}" is '
-                      f'(only outputs the translated {target_lang} sentence):')
-              + f'{lang_seq}"')
-    logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
-    kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 3.75)
-    kwargs['stop'] = stop_seq
-    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
-                      key=lambda x: len(x[0]), reverse=True)[0][1:-1].strip()
-    logger.debug(f'TRANSLATION: {best_ans}')
-    return best_ans
+    logger.debug(f'COT: {cot}')
+    return cot
 
 
-def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
+def translate(sentence: str, target_lang: str = 'en', **kwargs) -> str:
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     stop_seq = '[END]'
     regex = rf'.+"{stop_seq}'
