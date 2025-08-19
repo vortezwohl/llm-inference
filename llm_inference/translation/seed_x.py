@@ -44,7 +44,8 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     stop_seq = '[END]'
     regex = rf'.+"{stop_seq}'
-    prompt = f'Translate sentence "{sentence}" into "{target_lang.lower()}": {lang_seq}'
+    prompt = inference([f'Translate sentence [$PLACEHOLDER$] into "{target_lang}":'],
+                       llm=seed_x_lm, **kwargs)[0].replace('[$PLACEHOLDER$]', f'"{sentence}"') + lang_seq
     kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 2.75)
     kwargs['stop'] = stop_seq
     translation = inference(prompt=[prompt], llm=seed_x_lm, regex=regex, **kwargs)[0].strip()
