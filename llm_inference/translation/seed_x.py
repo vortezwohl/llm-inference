@@ -13,6 +13,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     pre_think = '[COT]'
     post_think = '[COT]'
     stop_seq = '[END]'
+    regex = rf'.+"{stop_seq}'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     kwargs['stop'] = post_think
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
@@ -33,7 +34,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
     kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 1.75)
     kwargs['stop'] = stop_seq
-    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
+    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)[0][1:-1].strip()
     logger.debug(f'TRANSLATION: {best_ans}')
     return best_ans
