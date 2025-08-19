@@ -16,9 +16,9 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     logger.debug(f'ANS: {best_ans}')
     best_ans = best_ans[0]
     prompt = (f'[COT]{best_ans}[COT]Translate the sentence into "{target_lang.lower()}":'
-              f'<sentence>{sentence}</sentence><{target_lang.lower().replace("<", "").replace(">", "")}>')
+              f'<sentence>{sentence}</sentence><{target_lang.lower().replace("<", "").replace(">", "")}><sentence>')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs), key=lambda x: len(x[0]), reverse=True)
-    logger.debug(f'FIN ANS: {best_ans}')
+    logger.debug(f'FIN ANS: {best_ans[0]}')
     best_ans = best_ans[0]
     return best_ans[0]
