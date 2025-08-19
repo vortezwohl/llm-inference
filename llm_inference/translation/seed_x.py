@@ -28,5 +28,5 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     kwargs['stop'] = stop_seq
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
                       key=lambda x: len(x[0]), reverse=True)[0].strip()
-    logger.debug(f'FIN ANS: {best_ans}')
+    logger.debug(f'TRANSLATION: {best_ans}')
     return best_ans
