@@ -20,7 +20,7 @@ def inference(prompt: str | list[str], llm: LLM, **kwargs) -> list[str]:
     retry = 0
     results = []
     while retry < max_retry:
-        results = llm.generate(prompts=prompt, params=SamplingParams(**kwargs))
+        results = llm.generate(prompt, sampling_params=SamplingParams(**kwargs))
         logger.debug(f'inference: {results}')
         results = [y.text for y in [x.outputs[0] for x in results] if y.finish_reason.lower() == 'stop']
         if len(results) > 0:
