@@ -25,9 +25,9 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     kwargs['stop'] = None
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
               f'{pre_think}{best_ans}{post_think}'
-              + inference([f'Translate sentence "After thinking, the best translation is" into "{target_lang}": {lang_seq}'],
+              + inference([f'Translate sentence "After thinking, the best translation is:" into "{target_lang}": {lang_seq}'],
                           llm=seed_x_lm, **kwargs)[0]
-              if 'en' not in target_lang else 'After thinking, the best translation is ' +
+              if 'en' not in target_lang else 'After thinking, the best translation is:' +
               f'{lang_seq}')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
     kwargs['max_tokens'] = int(len(sentence) * 2.5)
