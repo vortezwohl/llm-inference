@@ -14,7 +14,7 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     post_think = '[COT]'
     stop_seq = '[END]'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
-    regex = rf'.+{stop_seq}'
+    regex = rf'.+"{stop_seq}'
     kwargs['stop'] = post_think
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
               f'{lang_seq}{pre_think}')
@@ -27,11 +27,11 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
               f'{lang_seq}{pre_think}{best_ans}{post_think}'
               + (inference([f'Translate sentence "After all thinking above, the best {target_lang} translation is:" into "{target_lang}": {lang_seq}'],
                            llm=seed_x_lm, **kwargs)[0] if 'en' not in target_lang
-                 else 'After all thinking above, the best english translation is:'))
+                 else 'After all thinking above, the best english translation is:') + '"')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
     kwargs['max_tokens'] = int(len(sentence) * 2.5)
     kwargs['stop'] = stop_seq
     best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
-                      key=lambda x: len(x[0]), reverse=True)[0].strip()
+                      key=lambda x: len(x[0]), reverse=True)[0][1:-1].strip()
     logger.debug(f'TRANSLATION: {best_ans}')
     return best_ans
