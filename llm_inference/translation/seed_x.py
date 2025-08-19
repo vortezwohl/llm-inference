@@ -24,7 +24,8 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
     logger.debug(f'ANS: {best_ans}')
     best_ans = best_ans[0]
     prompt = (f'Translate sentence "{sentence}" into "{target_lang.lower()}" and explain in detail:'
-              f'{pre_think}{best_ans}{post_think}After thinking, the best translation is '
+              f'{pre_think}{best_ans.replace(pre_think, "").replace(post_think, "")}{post_think}'
+              f'After thinking, the best translation is '
               f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
               f'{pre_stop_seq}')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
