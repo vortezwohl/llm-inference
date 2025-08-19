@@ -5,8 +5,7 @@ from vllm import LLM
 from llm_inference.inference import inference_with_beam_search
 
 logger = logging.getLogger('llm_inference')
-seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_code=True, gpu_memory_utilization=.975, swap_space=16, cpu_offload_gb=3, max_seq_len_to_capture=4096)
-
+seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_code=True, gpu_memory_utilization=.975, swap_space=2, cpu_offload_gb=2, max_seq_len_to_capture=4096)
 
 def translate(sentence: str, target_lang: str = 'en', **kwargs) -> str:
     prompt = f'Translate the sentence into "{target_lang.lower()}" and explain in detail: <sentence>{sentence}</sentence> <{target_lang.lower().replace("<", "").replace(">", "")}>'
