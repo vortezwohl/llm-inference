@@ -15,7 +15,7 @@ def translate_cot(sentence: str, target_lang: str = 'en', resample: int = 1, **k
     regex = rf'.+"{post_think}'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     kwargs['stop'] = post_think
-    prompt = (inference([f'Translate sentence "Translate sentence [$PLACEHOLDER$] into "{target_lang}" and explain in detail:" into "{target_lang}":{lang_seq}'],
+    prompt = (inference([f'Translate sentence "Translate sentence [$PLACEHOLDER$] into [{target_lang}] and explain in detail:" into "{target_lang}":{lang_seq}'],
                         llm=seed_x_lm, **kwargs)[0].replace('[$PLACEHOLDER$]', f'"{sentence}"')
               + f'{lang_seq}{pre_think}')
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
@@ -29,10 +29,9 @@ def translate(sentence: str, target_lang: str = 'en', **kwargs) -> str:
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     stop_seq = '[END]'
     regex = rf'.+"{stop_seq}'
-    prompt = (inference([f'Translate sentence "Translate sentence [$PLACEHOLDER$] into "{target_lang}" and explain in detail:" into "{target_lang}":{lang_seq}'],
+    prompt = (inference([f'Translate sentence "Translate sentence [$PLACEHOLDER$] into [{target_lang}] and explain in detail:" into "{target_lang}":{lang_seq}'],
                         llm=seed_x_lm, **kwargs)[0].replace('[$PLACEHOLDER$]', f'"{sentence}"')
               + lang_seq)
-    kwargs['max_tokens'] = int(len(seed_x_lm.get_tokenizer().encode(sentence)) * 2.75)
     kwargs['stop'] = stop_seq
     translation = inference(prompt=[prompt], llm=seed_x_lm, regex=regex, **kwargs)[0].strip()
     logger.debug(f'TRANSLATION: {translation}')
