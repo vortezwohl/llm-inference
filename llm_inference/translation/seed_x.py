@@ -15,14 +15,16 @@ def translate(sentence: str, target_lang: str = 'en', resample: int = 1, **kwarg
               f'<sentence>{sentence}</sentence>'
               f'<{target_lang.lower().replace("<", "").replace(">", "")}>[COT]')
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
-    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs), key=lambda x: len(x[0]), reverse=True)
+    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
+                      key=lambda x: len(x[0]), reverse=True)
     logger.debug(f'ANS: {best_ans}')
     best_ans = best_ans[0]
     prompt = (f'[COT]{best_ans}[COT]Translate the sentence into "{target_lang.lower()}":'
               f'<sentence>{sentence}</sentence>'
               f'<{target_lang.lower().replace("<", "").replace(">", "")}><sentence>')
     logger.debug(f'REPROMPT WITH BEST ANS: {prompt.replace("\n", " ")}')
-    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs), key=lambda x: len(x[0]), reverse=True)[0].strip()
+    best_ans = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, regex=regex, **kwargs),
+                      key=lambda x: len(x[0]), reverse=True)[0].strip()
     best_ans = best_ans[:best_ans.rfind('</sentence>')].rstrip()
     logger.debug(f'FIN ANS: {best_ans}')
     return best_ans

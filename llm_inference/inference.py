@@ -15,7 +15,7 @@ def inference_with_beam_search(prompt: str, llm: LLM, temperature: float = .0, b
     return [(res.text, res.cum_logprob) for res in results]
 
 
-def inference(prompt: str | list[str], llm: LLM, regex: str, **kwargs) -> list[str]:
+def inference(prompt: str | list[str], llm: LLM, regex: str | None = None, **kwargs) -> list[str]:
     prompt = [TextPrompt(prompt=prompt)] if isinstance(prompt, str) else [TextPrompt(prompt=p) for p in prompt]
     max_retry = 8
     retry = 0
