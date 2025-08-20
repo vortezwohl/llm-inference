@@ -19,14 +19,16 @@ def inference(prompt: str | list[str], llm: LLM, regex: str | None = None, **kwa
     prompt = [TextPrompt(prompt=prompt)] if isinstance(prompt, str) else [TextPrompt(prompt=p) for p in prompt]
     max_retry = 8
     retry = 0
+    tmp_results = []
     results = []
     while retry < max_retry:
         results = llm.generate(prompt, sampling_params=SamplingParams(**kwargs),
                                guided_options_request=GuidedDecodingRequest(guided_regex=regex) if regex else None,
                                use_tqdm=True)
         logger.debug(f'inference: {results}')
+        tmp_results.extend(results)
         results = [y.text for y in [x.outputs[0] for x in results] if y.finish_reason.lower() == 'stop']
         if len(results) > 0:
             return results
         retry += 1
-    return results
+    return results if len(results) else tmp_results[0]
