@@ -31,4 +31,4 @@ def inference(prompt: str | list[str], llm: LLM, regex: str | None = None, **kwa
         if len(results) > 0:
             return results
         retry += 1
-    return results if len(results) else tmp_results[0]
+    return results if len(results) else tmp_results
