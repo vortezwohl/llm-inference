@@ -5,8 +5,8 @@ from vllm import LLM
 from llm_inference.inference import inference
 
 logger = logging.getLogger('llm_inference')
-seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_code=True, gpu_memory_utilization=.975,
-                swap_space=2, cpu_offload_gb=1, max_seq_len_to_capture=4096)
+seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_code=True, gpu_memory_utilization=.925,
+                swap_space=2, cpu_offload_gb=1.5, max_seq_len_to_capture=4096)
 
 
 def translate_cot(sentence: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
