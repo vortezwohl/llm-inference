@@ -9,7 +9,7 @@ seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_cod
                 swap_space=2, cpu_offload_gb=1.5, max_seq_len_to_capture=4096)
 
 
-def translate_cot(sentence: str, prefix: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
+def translate_cot(sentence: str, prefix: str = '', target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
     pre_think = '[COT]'
     post_think = '[COT]'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
