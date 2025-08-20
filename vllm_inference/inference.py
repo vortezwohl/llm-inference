@@ -4,7 +4,7 @@ from vllm import LLM, TextPrompt
 from vllm.model_executor.guided_decoding.guided_fields import GuidedDecodingRequest
 from vllm.sampling_params import BeamSearchParams, SamplingParams
 
-logger = logging.getLogger('llm_inference')
+logger = logging.getLogger('vllm_inference')
 
 
 def inference_with_beam_search(prompt: str, llm: LLM, temperature: float = .0, beam_width: int = 4, max_tokens: int = 4096) -> list[tuple[str, float]]:

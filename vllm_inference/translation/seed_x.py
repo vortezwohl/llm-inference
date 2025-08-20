@@ -2,9 +2,9 @@ import logging
 
 from vllm import LLM
 
-from llm_inference.inference import inference
+from vllm_inference.inference import inference
 
-logger = logging.getLogger('llm_inference')
+logger = logging.getLogger('vllm_inference')
 seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_code=True, gpu_memory_utilization=.925,
                 swap_space=2, cpu_offload_gb=1.5, max_seq_len_to_capture=4096)
 

@@ -19,7 +19,7 @@
 1. ### Seed-X 机器翻译
     
     ```python
-    from llm_inference.translation.seed_x import translate
+    from vllm_inference.translation.seed_x import translate
     ```
 
     ```python
