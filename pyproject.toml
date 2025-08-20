@@ -1,5 +1,5 @@
 [project]
-name = "llm-inference"
+name = "vllm-inference"
 version = "0.0.15"
 description = "Inference locally."
 readme = "README.md"
