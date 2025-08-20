@@ -12,9 +12,11 @@ seed_x_lm = LLM(model='ByteDance-Seed/Seed-X-PPO-7B-GPTQ-Int8', trust_remote_cod
 def translate_cot(sentence: str, context: str, target_lang: str = 'en', resample: int = 1, **kwargs) -> str:
     pre_think = '[COT]'
     post_think = '[COT]'
+    pre_ctx = '<context>'
+    post_ctx = '</context>'
     lang_seq = f'<{target_lang.lower().replace("<", "").replace(">", "")}>'
     kwargs['stop'] = post_think
-    prompt = f'[CTX]{context}[CTX]Translate the sentence and explain in detail.<sentence>{sentence}</sentence>{lang_seq}{pre_think}'
+    prompt = f'{pre_ctx}{context}{post_ctx}Translate the sentence and explain in detail.<sentence>{sentence}</sentence>{lang_seq}{pre_think}'
     logger.debug(f'PROMPT: {prompt.replace("\n", " ")}')
     cot = sorted(inference(prompt=[prompt] * resample, llm=seed_x_lm, **kwargs),
                  key=lambda x: len(x[0]), reverse=True)[0]
